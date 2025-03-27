@@ -1,4 +1,4 @@
-# Rox on Rails
+# Fox on Rails
 
 I was revisiting some code of a university project I was part of. After some tinkering around I decided to tinker some more. Let's see what this leads to on a "every once and a while" base :D
 
