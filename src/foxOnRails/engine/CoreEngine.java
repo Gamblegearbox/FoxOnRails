@@ -2,6 +2,7 @@ package foxOnRails.engine;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
+import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import org.lwjgl.glfw.GLFW;

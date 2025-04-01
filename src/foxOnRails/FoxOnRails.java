@@ -23,6 +23,7 @@ import foxOnRails.utils.Info;
 public class FoxOnRails implements Game 
 {
 	private static final Vector3f CAM_START_POSITION = new Vector3f(0.0f, 20.0f, 100.0f);
+	private static final Vector3f LIGHT_POSITION = new Vector3f(-50f, 50f, -100f);
 
 	// GAMEOBJECTS
 	private LinkedList activeObjects;
@@ -33,7 +34,7 @@ public class FoxOnRails implements Game
 	private HeadsUpDisplay hud;
 
 	// SHADERS
-	private ShaderProgram unshadedVertexColorShader;
+	private ShaderProgram shadedVertexColorShader;
 
 	// MATRICES // VECTORS
 	private Matrix4f modelViewMatrix;
@@ -52,7 +53,7 @@ public class FoxOnRails implements Game
 		normalMatrix = new Matrix4f();
 		
 		initOpenGL();
-		unshadedVertexColorShader = new ShaderProgram("unshadedVertexColor");
+		shadedVertexColorShader = new ShaderProgram("shadedVertexColor");
 		initGameObjects();
 	}
 
@@ -86,7 +87,7 @@ public class FoxOnRails implements Game
 		Info.camera.update(deltaTime);
 		playerShip.update(deltaTime);
 		
-		if(Keyboard.isKeyPressedWithReset(GLFW.GLFW_KEY_5)){ wireframe = !wireframe; }
+		if(Keyboard.isKeyPressedWithReset(GLFW.GLFW_KEY_TAB)){ wireframe = !wireframe; }
 		if(Keyboard.isKeyPressed(GLFW.GLFW_KEY_SPACE)){ shoot(); }
 		
 		for (int i = 0; i < bullets.length; i++) {
@@ -101,20 +102,28 @@ public class FoxOnRails implements Game
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		glUseProgram(unshadedVertexColorShader.getId());
-		unshadedVertexColorShader.loadUniformMat4f(CoreEngine.projectionMatrix, "projectionMatrix", false);
+		glUseProgram(shadedVertexColorShader.getId());
+
+		shadedVertexColorShader.loadUniformMat4f(CoreEngine.projectionMatrix, "projectionMatrix", false);
+		shadedVertexColorShader.loadUniform1f(0.2f, "ambientLight");
+		shadedVertexColorShader.loadUniformVec3f(LIGHT_POSITION, "lightPosition");
 		drawLevel();
 		drawPlayer();
+		shadedVertexColorShader.loadUniform1f(1.0f, "ambientLight");
 		drawEffects();
+
+		shadedVertexColorShader.loadUniformMat4f(CoreEngine.orthographicProjectionMatrix, "projectionMatrix", false);
 		drawHUD();
+
+		glUseProgram(0);
 	}
 	
 	private void drawLevel() {
 		Matrix4f.mul(Info.camera.getViewMatrix(), polystrip.getModelMatrix(), modelViewMatrix);
 		Matrix4f.invert(polystrip.getModelMatrix(), normalMatrix);
 
-		unshadedVertexColorShader.loadUniformMat4f(modelViewMatrix, "modelViewMatrix", false);
-		unshadedVertexColorShader.loadUniformMat4f(normalMatrix, "normalMatrix", true);
+		shadedVertexColorShader.loadUniformMat4f(modelViewMatrix, "modelViewMatrix", false);
+		shadedVertexColorShader.loadUniformMat4f(normalMatrix, "normalMatrix", true);
 		
 		if(wireframe) {
 			glDepthFunc(GL_LEQUAL);
@@ -131,8 +140,8 @@ public class FoxOnRails implements Game
 		Matrix4f.mul(Info.camera.getViewMatrix(), playerShip.getModelMatrix(), modelViewMatrix);
 		Matrix4f.invert(polystrip.getModelMatrix(), normalMatrix);
 
-		unshadedVertexColorShader.loadUniformMat4f(modelViewMatrix, "modelViewMatrix", false);
-		unshadedVertexColorShader.loadUniformMat4f(normalMatrix, "normalMatrix", true);
+		shadedVertexColorShader.loadUniformMat4f(modelViewMatrix, "modelViewMatrix", false);
+		shadedVertexColorShader.loadUniformMat4f(normalMatrix, "normalMatrix", true);
 
 		if(wireframe) {
 			glDepthFunc(GL_LEQUAL);
@@ -150,7 +159,7 @@ public class FoxOnRails implements Game
 
 		for (int i = 0; i < bullets.length; i++) {
 			Matrix4f.mul(viewMatrix4f, bullets[i].getModelMatrix(), modelViewMatrix);
-			unshadedVertexColorShader.loadUniformMat4f(modelViewMatrix, "modelViewMatrix", false);	
+			shadedVertexColorShader.loadUniformMat4f(modelViewMatrix, "modelViewMatrix", false);	
 			
 			bullets[i].render(GL_POINTS);
 			bullets[i].render(GL_LINES);
@@ -158,11 +167,8 @@ public class FoxOnRails implements Game
 	}
 	
 	private void drawHUD() {
-		unshadedVertexColorShader.loadUniformMat4f(CoreEngine.orthographicProjectionMatrix, "projectionMatrix", false);
-		unshadedVertexColorShader.loadUniformMat4f(hud.getModelMatrix(), "modelViewMatrix", false);
+		shadedVertexColorShader.loadUniformMat4f(hud.getModelMatrix(), "modelViewMatrix", false);
 		hud.getBackgroundMesh().render(GL_TRIANGLES);
-
-		glUseProgram(0);
 	}
 			
 	private void printVersionInfo() {
@@ -172,7 +178,6 @@ public class FoxOnRails implements Game
 	}
 	
 	private void shoot() {
-
 		for (int i = 0; i < bullets.length; i++) {
 			
 			if (bullets[i].getIsActive() == false) {
