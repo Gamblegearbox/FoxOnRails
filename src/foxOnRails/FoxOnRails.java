@@ -23,11 +23,9 @@ import foxOnRails.utils.Info;
 public class FoxOnRails implements Game 
 {
 	private static final Vector3f CAM_START_POSITION = new Vector3f(0.0f, 20.0f, 100.0f);
-	private static final Vector3f LIGHT_POSITION = new Vector3f(-50f, 50f, -100f);
+	private static final Vector3f LIGHT_POSITION = new Vector3f(0f, 5f, -1f);
 
 	// GAMEOBJECTS
-	private LinkedList activeObjects;
-	private LinkedList passiveObjects;
 	private PolyBullet[] bullets;
 	private Polystrip polystrip;
 	private PlayerShip playerShip;
@@ -41,7 +39,7 @@ public class FoxOnRails implements Game
 	private Matrix4f normalMatrix;
 	
 	// CONTROLS
-	private boolean wireframe = true;
+	private boolean wireframe = false;
 	
 	@Override
 	public void init() {
@@ -62,15 +60,14 @@ public class FoxOnRails implements Game
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);		
-        glEnable(GL_POINT_SMOOTH);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glEnable(GL_LINE_SMOOTH);		
+        //glEnable(GL_POINT_SMOOTH);
         glPointSize(3.5f);
-		glLineWidth(3.0f);
 	}
 
 	private void initGameObjects() {
-		polystrip = new Polystrip(1, 50, false);
+		polystrip = new Polystrip(1, 100, false);
 		playerShip = new PlayerShip();
 		bullets = new PolyBullet[1000];
 		
@@ -88,7 +85,7 @@ public class FoxOnRails implements Game
 		playerShip.update(deltaTime);
 		
 		if(Keyboard.isKeyPressedWithReset(GLFW.GLFW_KEY_TAB)){ wireframe = !wireframe; }
-		if(Keyboard.isKeyPressed(GLFW.GLFW_KEY_SPACE)){ shoot(); }
+		if(Keyboard.isKeyPressed(GLFW.GLFW_KEY_SPACE)){ shoot(); } //TODO: move to ship
 		
 		for (int i = 0; i < bullets.length; i++) {
 			bullets[i].update(deltaTime);
@@ -105,7 +102,7 @@ public class FoxOnRails implements Game
 		glUseProgram(shadedVertexColorShader.getId());
 
 		shadedVertexColorShader.loadUniformMat4f(CoreEngine.projectionMatrix, "projectionMatrix", false);
-		shadedVertexColorShader.loadUniform1f(0.2f, "ambientLight");
+		shadedVertexColorShader.loadUniform1f(0.1f, "ambientLight");
 		shadedVertexColorShader.loadUniformVec3f(LIGHT_POSITION, "lightPosition");
 		drawLevel();
 		drawPlayer();
@@ -138,7 +135,7 @@ public class FoxOnRails implements Game
 
 	private void drawPlayer(){
 		Matrix4f.mul(Info.camera.getViewMatrix(), playerShip.getModelMatrix(), modelViewMatrix);
-		Matrix4f.invert(polystrip.getModelMatrix(), normalMatrix);
+		Matrix4f.invert(playerShip.getModelMatrix(), normalMatrix);
 
 		shadedVertexColorShader.loadUniformMat4f(modelViewMatrix, "modelViewMatrix", false);
 		shadedVertexColorShader.loadUniformMat4f(normalMatrix, "normalMatrix", true);

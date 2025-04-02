@@ -19,6 +19,8 @@ public class Camera
 	private static final Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
 
 	private Matrix4f view;
+	private Matrix4f rot;
+	private Matrix4f trans;
 	
 	private float velocity = MAX_CAM_SPEED;
 	private boolean boostEnabled;
@@ -27,18 +29,25 @@ public class Camera
 	public Camera(Vector3f _position) {
 		position = _position;
 		view = new Matrix4f();
+		rot = new Matrix4f();
+		trans = new Matrix4f();
+
+		view.setIdentity();
+		rot.setIdentity();
+		trans.setIdentity();
 	}
 		
 	public Matrix4f getViewMatrix() {
 		angle = (float)Cursor.getDx() / 250.0f;
-		
-		view.rotate(angle, UP);
-		
-		view.m30 = -position.x;
-		view.m31 = -position.y;
-		view.m32 = -position.z;
-		view.m33 = 1.0f;
+		rot.rotate(angle, UP);
 
+		trans.m30 = -position.x;
+		trans.m31 = -position.y;
+		trans.m32 = -position.z;
+		trans.m33 = 1.0f;
+
+		Matrix4f.mul(rot, trans, view);
+		
 		return view;
 	}
 
@@ -52,6 +61,7 @@ public class Camera
 
 	public void update(float deltaTime) {
 		boostEnabled = Keyboard.isKeyPressed(GLFW_KEY_LEFT_SHIFT);
+		angle = 0f;
 
 		if(boostEnabled)
 			velocity = MAX_CAM_SPEED;

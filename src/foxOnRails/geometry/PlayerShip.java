@@ -88,29 +88,29 @@ public class PlayerShip extends MeshObject
 
 		// front
 		indices[0] = 0;
-		indices[1] = 2;
-		indices[2] = 1;
+		indices[1] = 1;
+		indices[2] = 2;
 		
 		indices[3] = 0;
-		indices[4] = 1;
-		indices[5] = 3;
+		indices[4] = 3;
+		indices[5] = 1;
 
 		indices[6] = 0;
-		indices[7] = 3;
-		indices[8] = 2;
+		indices[7] = 2;
+		indices[8] = 3;
 
 		// rear
 		indices[9] = 1;
-		indices[10] = 2;
-		indices[11] = 4;
+		indices[10] = 4;
+		indices[11] = 2;
 
 		indices[12] = 2;
-		indices[13] = 3;
-		indices[14] = 4;
+		indices[13] = 4;
+		indices[14] = 3;
 
 		indices[15] = 1;
-		indices[16] = 4;
-		indices[17] = 3;
+		indices[16] = 3;
+		indices[17] = 4;
 
 		// 0
 		colors[0]  = Colors.RED[0];
