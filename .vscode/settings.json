@@ -1,0 +1,7 @@
+{
+    "java.project.referencedLibraries": [
+        "libs/lwjgl_util.jar",
+        "libs/PNGDecoder.jar",
+        "libs/lwjgl_3.0.0a/jar/lwjgl.jar"
+    ]
+}
