@@ -3,12 +3,15 @@ package foxOnRails;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 
+import java.nio.FloatBuffer;
 import java.util.LinkedList;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.BufferUtils;
 
 import foxOnRails.engine.Camera;
 import foxOnRails.engine.CoreEngine;
@@ -37,6 +40,8 @@ public class FoxOnRails implements Game
 	private Polystrip polystrip;
 	private PlayerShip playerShip;
 	private HeadsUpDisplay hud;
+
+	private float cnt = 0f;
 
 	// SHADERS
 	private ShaderProgram shadedVertexColorShader;
@@ -71,6 +76,66 @@ public class FoxOnRails implements Game
         //glEnable(GL_LINE_SMOOTH);		
         //glEnable(GL_POINT_SMOOTH);
         glPointSize(3.5f);
+
+
+		glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        float aspectRatio = 800.0f / 600.0f; // Example aspect ratio
+        float fov = 45.0f; // Field of view in degrees
+        float near = 0.1f; // Near clipping plane
+        float far = 100.0f; // Far clipping plane
+        float top = (float) Math.tan(Math.toRadians(fov / 2)) * near;
+        float bottom = -top;
+        float right = top * aspectRatio;
+        float left = -right;
+        glFrustum(left, right, bottom, top, near, far);
+
+		glMatrixMode (GL_MODELVIEW);
+		glLoadIdentity ();
+
+		
+		FloatBuffer light_ambient = BufferUtils.createFloatBuffer(4);
+		light_ambient.put(0).put(0).put(0).put(1).flip();
+
+		FloatBuffer light_diffuse = BufferUtils.createFloatBuffer(4);
+		light_diffuse.put(1).put(1).put(1).put(1).flip();
+
+		FloatBuffer light_specular = BufferUtils.createFloatBuffer(4);
+		light_specular.put(1).put(1).put(1).put(1).flip();
+
+		FloatBuffer light_position = BufferUtils.createFloatBuffer(4);	
+		light_position.put(1).put(1).put(3).put(0).flip();
+
+		FloatBuffer lightModel_ambient = BufferUtils.createFloatBuffer(4);	
+		lightModel_ambient.put(0.2f).put(0.2f).put(0.2f).put(1.0f).flip();
+
+		FloatBuffer material_ambient = BufferUtils.createFloatBuffer(4);	
+		material_ambient.put(0.2f).put(0.2f).put(0.2f).put(1.0f).flip();
+
+		FloatBuffer material_diffuse = BufferUtils.createFloatBuffer(4);	
+		material_diffuse.put(0.8f).put(0.8f).put(0.8f).put(1.0f).flip();
+
+		FloatBuffer material_specular = BufferUtils.createFloatBuffer(4);	
+		material_specular.put(1f).put(1f).put(1f).put(1f).flip();
+
+		FloatBuffer material_emission = BufferUtils.createFloatBuffer(4);	
+		material_emission.put(0f).put(0f).put(0f).put(1.0f).flip();
+
+		glLightfv (GL_LIGHT0, GL_AMBIENT, light_ambient);
+		glLightfv (GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+		glLightfv (GL_LIGHT0, GL_SPECULAR, light_specular);
+		glLightfv (GL_LIGHT0, GL_POSITION, light_position);
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lightModel_ambient);
+		glMaterialfv(GL_FRONT, GL_AMBIENT, material_ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, material_diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
+		glMaterialfv(GL_FRONT, GL_EMISSION, material_emission);
+		glMaterialf(GL_FRONT, GL_SHININESS, 10.0f);               /* NOT default value	*/
+		glEnable (GL_LIGHTING);
+		glEnable (GL_LIGHT0);
+		glEnable (GL_NORMALIZE);
+		glEnable (GL_DEPTH_TEST);
+		glClearColor(.5f,.5f,.5f,1.f);
 	}
 
 	private void initGameObjects() {
@@ -128,6 +193,61 @@ public class FoxOnRails implements Game
 		drawHUD();
 
 		glUseProgram(0);
+
+		
+
+
+        // Switch to modelview matrix mode
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        // Apply the translation to move the object 10 units along the -z axis
+        glTranslatef(playerShip.getPosition().x, playerShip.getPosition().y, playerShip.getPosition().z - 50f);
+		glRotatef(cnt%360, 1,0,0);
+		glRotatef(45.f, 0,0,1);
+        // Your rendering code here
+        // For example, drawing a simple object:
+		glBegin(GL_QUADS);                // Begin drawing the color cube with 6 quads
+		// Top face (y = 1.0f)
+		glNormal3f( 0.0f, 1.0f,  0.0f);
+		glVertex3f( 1.0f, 1.0f, -1.0f);
+		glVertex3f(-1.0f, 1.0f, -1.0f);
+		glVertex3f(-1.0f, 1.0f,  1.0f);
+		glVertex3f( 1.0f, 1.0f,  1.0f);
+		// Bottom face (y = -1.0f)
+		glNormal3f( 0.0f, -1.0f,  0.0f);
+		glVertex3f( 1.0f, -1.0f,  1.0f);
+		glVertex3f(-1.0f, -1.0f,  1.0f);
+		glVertex3f(-1.0f, -1.0f, -1.0f);
+		glVertex3f( 1.0f, -1.0f, -1.0f);
+		// Front face  (z = 1.0f)
+		glNormal3f( 0.0f,  0.0f, 1.0f);
+		glVertex3f( 1.0f,  1.0f, 1.0f);
+		glVertex3f(-1.0f,  1.0f, 1.0f);
+		glVertex3f(-1.0f, -1.0f, 1.0f);
+		glVertex3f( 1.0f, -1.0f, 1.0f);
+		// Back face (z = -1.0f)
+		glNormal3f( 0.0f,  0.0f, -1.0f);
+		glVertex3f( 1.0f, -1.0f, -1.0f);
+		glVertex3f(-1.0f, -1.0f, -1.0f);
+		glVertex3f(-1.0f,  1.0f, -1.0f);
+		glVertex3f( 1.0f,  1.0f, -1.0f);
+		// Left face (x = -1.0f)
+		glNormal3f(-1.0f,  0.0f,  0.0f);
+		glVertex3f(-1.0f,  1.0f,  1.0f);
+		glVertex3f(-1.0f,  1.0f, -1.0f);
+		glVertex3f(-1.0f, -1.0f, -1.0f);
+		glVertex3f(-1.0f, -1.0f,  1.0f);
+		// Right face (x = 1.0f)
+		glNormal3f(1.0f,  0.0f,  0.0f);
+		glVertex3f(1.0f,  1.0f, -1.0f);
+		glVertex3f(1.0f,  1.0f,  1.0f);
+		glVertex3f(1.0f, -1.0f,  1.0f);
+		glVertex3f(1.0f, -1.0f, -1.0f);
+		glEnd();  // End of drawing color-cube
+		cnt ++;
+
+		System.out.println("FPS: " + Info.fps);
 	}
 	
 	private void drawElement(MeshObject mesh) {

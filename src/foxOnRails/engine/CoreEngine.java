@@ -69,11 +69,8 @@ public class CoreEngine
 
         glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
         
-        // necessary for OpenGL 3/4:
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-    	GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
-    	GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    	GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    	GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
 
     	if(fullscreen) {
     		long monitor = glfwGetPrimaryMonitor();
