@@ -1,46 +1,67 @@
 package foxOnRails.geometry;
 
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
+
 import foxOnRails.engine.MeshObject;
 import foxOnRails.engine.VertexArray;
 
-public class Rectangle2D extends MeshObject
+public class Rectangle extends MeshObject
 {	
-	public Rectangle2D(float x, float y, float width, float height, float[][] vertexColors) {	
-		
+	public Rectangle(float x, float y, float z, float width, float height, float[][] vertexColors, boolean is2d) {	
+		position = new Vector3f(x,y,z);
+		modelMatrix = new Matrix4f();
+		Matrix4f.setIdentity(modelMatrix);
+		modelMatrix.translate(position);
+
 		vertices = new float[12];
 		indices = new int[6];	
-		uvCoords = new float[4*2];
 		normals = new float[4*3];
 		colors = new float[16];
-		createMesh(x, y, width, height);
+		createMesh(width, height, is2d);
 		setColors(vertexColors);
 		mesh = new VertexArray(vertices, normals, colors, indices);
 	}
 	
-	private void createMesh(float x, float y, float width, float height) {
-		vertices[0] = x;
-		vertices[1] = y;
+	private void createMesh(float width, float height, boolean is2d) {
+		float xMod, yMod;
+		
+		if(!is2d) {
+			xMod = width * 0.5f;
+			yMod = height * 0.5f;
+		}
+		else {
+			xMod = 0;
+			yMod = 0;
+		}
+
+		// 0
+		vertices[0] = -xMod;
+		vertices[1] = -yMod + height;
 		vertices[2] = 0f;
 		normals[0] = 0f;
 		normals[1] = 0f;
 		normals[2] = 1f;
 		
-		vertices[3] = x + width;
-		vertices[4] = y;
+		// 1
+		vertices[3] = -xMod + width;
+		vertices[4] = -yMod + height;
 		vertices[5] = 0;
 		normals[3] = 0f;
 		normals[4] = 0f;
 		normals[5] = 1f;
 		
-		vertices[6] = x + width;
-		vertices[7] = y + height;
+		// 2
+		vertices[6] = -xMod + width;
+		vertices[7] = -yMod;
 		vertices[8] = 0;
 		normals[6] = 0f;
 		normals[7] = 0f;
 		normals[8] = 1f;
 		
-		vertices[9] = x;
-		vertices[10] = y + height;
+		// 3
+		vertices[9] = -xMod;
+		vertices[10] = -yMod;
 		vertices[11] = 0;
 		normals[9] = 0f;
 		normals[10] = 0f;

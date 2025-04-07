@@ -8,7 +8,6 @@ public abstract class MeshObject
 {
 	protected float[] vertices;
 	protected float[] normals;
-	protected float[] uvCoords;
 	protected float[] colors;
 	
 	protected int[] indices;

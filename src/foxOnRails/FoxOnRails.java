@@ -6,16 +6,20 @@ import static org.lwjgl.opengl.GL20.*;
 import java.util.LinkedList;
 
 import org.lwjgl.glfw.GLFW;
+
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import foxOnRails.engine.Camera;
 import foxOnRails.engine.CoreEngine;
+import foxOnRails.engine.MeshObject;
+import foxOnRails.engine.ShaderProgram;
+import foxOnRails.gameContent.Colors;
 import foxOnRails.gameContent.HeadsUpDisplay;
 import foxOnRails.geometry.PlayerShip;
 import foxOnRails.geometry.PolyBullet;
 import foxOnRails.geometry.Polystrip;
-import foxOnRails.graphics.ShaderProgram;
+import foxOnRails.geometry.Rectangle;
 import foxOnRails.input.Keyboard;
 import foxOnRails.interfaces.Game;
 import foxOnRails.utils.Info;
@@ -23,9 +27,12 @@ import foxOnRails.utils.Info;
 public class FoxOnRails implements Game 
 {
 	private static final Vector3f CAM_START_POSITION = new Vector3f(0.0f, 20.0f, 100.0f);
-	private static final Vector3f LIGHT_POSITION = new Vector3f(0f, 5f, -1f);
+	private static final float AMBIENT_LIGHT = 0.2f;
+	private static final float AMBIENT_LIGHT_EFFECT = 1.0f;
+
 
 	// GAMEOBJECTS
+	private Rectangle sky;
 	private PolyBullet[] bullets;
 	private Polystrip polystrip;
 	private PlayerShip playerShip;
@@ -67,7 +74,16 @@ public class FoxOnRails implements Game
 	}
 
 	private void initGameObjects() {
-		polystrip = new Polystrip(1, 100, false);
+		float[][] bgColors = new float[][] {
+			Colors.D_BLUE,
+			Colors.D_BLUE,
+			Colors.D_BLUE,
+			Colors.YELLOW
+		};
+
+		sky = new Rectangle(0f, 350f, -1500f, 2000f, 700f, bgColors, false);
+
+		polystrip = new Polystrip(2000, 2000, false);
 		playerShip = new PlayerShip();
 		bullets = new PolyBullet[1000];
 		
@@ -75,7 +91,7 @@ public class FoxOnRails implements Game
 			bullets[i] = new PolyBullet(10f);
 		}
 
-		hud = new HeadsUpDisplay(10, 10, "arial_nm.png");
+		hud = new HeadsUpDisplay(20, 20, "arial_nm.png");
 	}
 
 	@Override
@@ -90,8 +106,6 @@ public class FoxOnRails implements Game
 		for (int i = 0; i < bullets.length; i++) {
 			bullets[i].update(deltaTime);
 		}
-
-		System.err.println("FPS: " + Info.fps);
 	}
 
 	@Override
@@ -102,12 +116,13 @@ public class FoxOnRails implements Game
 		glUseProgram(shadedVertexColorShader.getId());
 
 		shadedVertexColorShader.loadUniformMat4f(CoreEngine.projectionMatrix, "projectionMatrix", false);
-		shadedVertexColorShader.loadUniform1f(0.1f, "ambientLight");
-		shadedVertexColorShader.loadUniformVec3f(LIGHT_POSITION, "lightPosition");
-		drawLevel();
-		drawPlayer();
-		shadedVertexColorShader.loadUniform1f(1.0f, "ambientLight");
+		shadedVertexColorShader.loadUniform1f(AMBIENT_LIGHT, "ambientLight");
+		drawElement(polystrip);
+		drawElement(playerShip);
+		
+		shadedVertexColorShader.loadUniform1f(AMBIENT_LIGHT_EFFECT, "ambientLight");
 		drawEffects();
+		drawElement(sky);
 
 		shadedVertexColorShader.loadUniformMat4f(CoreEngine.orthographicProjectionMatrix, "projectionMatrix", false);
 		drawHUD();
@@ -115,39 +130,21 @@ public class FoxOnRails implements Game
 		glUseProgram(0);
 	}
 	
-	private void drawLevel() {
-		Matrix4f.mul(Info.camera.getViewMatrix(), polystrip.getModelMatrix(), modelViewMatrix);
-		Matrix4f.invert(polystrip.getModelMatrix(), normalMatrix);
+	private void drawElement(MeshObject mesh) {
+		Matrix4f.mul(Info.camera.getViewMatrix(), mesh.getModelMatrix(), modelViewMatrix);
+		Matrix4f.invert(mesh.getModelMatrix(), normalMatrix);
 
 		shadedVertexColorShader.loadUniformMat4f(modelViewMatrix, "modelViewMatrix", false);
 		shadedVertexColorShader.loadUniformMat4f(normalMatrix, "normalMatrix", true);
 		
 		if(wireframe) {
 			glDepthFunc(GL_LEQUAL);
-			polystrip.render(GL_LINE_LOOP);
-			polystrip.render(GL_POINTS);
+			mesh.render(GL_LINE_LOOP);
+			mesh.render(GL_POINTS);
 		 	glDepthFunc(GL_LESS);
 		}
 		else {
-			polystrip.render(GL_TRIANGLES);
-		}
-	}
-
-	private void drawPlayer(){
-		Matrix4f.mul(Info.camera.getViewMatrix(), playerShip.getModelMatrix(), modelViewMatrix);
-		Matrix4f.invert(playerShip.getModelMatrix(), normalMatrix);
-
-		shadedVertexColorShader.loadUniformMat4f(modelViewMatrix, "modelViewMatrix", false);
-		shadedVertexColorShader.loadUniformMat4f(normalMatrix, "normalMatrix", true);
-
-		if(wireframe) {
-			glDepthFunc(GL_LEQUAL);
-			playerShip.render(GL_LINE_LOOP);
-			playerShip.render(GL_POINTS);
-		 	glDepthFunc(GL_LESS);
-		}
-		else {
-			playerShip.render(GL_TRIANGLES);
+			mesh.render(GL_TRIANGLES);
 		}
 	}
 

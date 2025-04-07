@@ -1,7 +1,7 @@
 package foxOnRails.gameContent;
 
 import org.lwjgl.util.vector.Matrix4f;
-import foxOnRails.geometry.Rectangle2D;
+import foxOnRails.geometry.Rectangle;
 
 public class HeadsUpDisplay
 {
@@ -12,7 +12,7 @@ public class HeadsUpDisplay
 	
 	private int position_x;
 	private int position_y;
-	private Rectangle2D background;
+	private Rectangle background;
 	
 	public HeadsUpDisplay() {
 		position_x = STANDARD_POSITION_X;
@@ -25,17 +25,17 @@ public class HeadsUpDisplay
 
 		float[][] bgColors = new float[][] {
 			Colors.WHITE,
-			Colors.BLUE,
-			Colors.GREEN,
+			Colors.L_BLUE,
+			Colors.L_GREEN,
 			Colors.YELLOW
 		};
-		this.background = new Rectangle2D(position_x, position_y, 200, 40, bgColors);
+		this.background = new Rectangle(position_x, position_y, 0, 200, 40, bgColors, true);
 	}
 	
 	public void update(String text) {
 	}
 	
-	public Rectangle2D getBackgroundMesh() {
+	public Rectangle getBackgroundMesh() {
 		return background;
 	}
 	
