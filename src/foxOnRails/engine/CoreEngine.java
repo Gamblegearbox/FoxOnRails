@@ -2,7 +2,6 @@ package foxOnRails.engine;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import org.lwjgl.glfw.GLFW;
@@ -15,18 +14,13 @@ import org.lwjgl.util.vector.Matrix4f;
 import foxOnRails.input.Cursor;
 import foxOnRails.input.Keyboard;
 import foxOnRails.interfaces.Game;
-import foxOnRails.utils.Info;
+import foxOnRails.utils.Settings;
 import foxOnRails.utils.MatrixUtils;
 import foxOnRails.utils.Timer;
 
 public class CoreEngine
 {
     private final Game game;
-
-    public static Matrix4f projectionMatrix;
-    public static Matrix4f orthographicProjectionMatrix;
-
-    private float fovParam = 45.0f;
 
     public boolean running;
     public long windowHandle;
@@ -40,9 +34,6 @@ public class CoreEngine
     
     public CoreEngine(Game game) {
         this.game = game;
-
-        projectionMatrix = MatrixUtils.perspectiveProjectionMatrix(fovParam, Info.gameRes[0], Info.gameRes[1]);
-        orthographicProjectionMatrix = MatrixUtils.orthographicProjectionMatrix(0, -Info.gameRes[0], -Info.gameRes[1], 0.0f, -1.0f, 1.0f);
     }
 
     public void start() {
@@ -74,12 +65,11 @@ public class CoreEngine
 
     	if(fullscreen) {
     		long monitor = glfwGetPrimaryMonitor();
-    		GLFWvidmode mode = new GLFWvidmode(glfwGetVideoMode(monitor));
-    		
+    		GLFWvidmode mode = new GLFWvidmode(glfwGetVideoMode(monitor));		
     		windowHandle = glfwCreateWindow(mode.getWidth(), mode.getHeight(), "Stare into it device: " + windowHandle, monitor, NULL);
        	} 
     	else {
-    		windowHandle = glfwCreateWindow(Info.gameRes[0], Info.gameRes[1], "Stare into it device: " + windowHandle, NULL, NULL);	
+    		windowHandle = glfwCreateWindow(Settings.gameRes[0], Settings.gameRes[1], "Stare into it device: " + windowHandle, NULL, NULL);	
     	}
         
         if(windowHandle == NULL) {
@@ -107,8 +97,7 @@ public class CoreEngine
     public void update() {
         glfwPollEvents();
    
-        Info.fov = fovParam;
-        Info.fps = timer.getFPS();
+        Settings.fps = timer.getFPS();
         game.update(timer.getDeltaTime());
         game.render();
         

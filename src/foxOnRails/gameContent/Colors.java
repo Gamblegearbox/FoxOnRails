@@ -9,7 +9,7 @@ public class Colors {
     public static final float[] L_GREY =        new float[] { 0.651f, 0.686f, 0.718f, 1.0f };
     public static final float[] M_GREY =        new float[] { 0.384f, 0.361f, 0.353f, 1.0f };
     public static final float[] D_GREY =        new float[] { 0.216f, 0.216f, 0.216f, 1.0f };
-    public static final float[] BLACK =         new float[] { 0.750f, 0.750f, 0.750f, 1.0f };
+    public static final float[] BLACK =         new float[] { 0.075f, 0.075f, 0.075f, 1.0f };
     
     public static final float[] WHITE =         new float[] { 0.925f, 0.878f, 0.827f, 1.0f };
     public static final float[] YELLOW =        new float[] { 0.949f, 0.761f, 0.216f, 1.0f };
