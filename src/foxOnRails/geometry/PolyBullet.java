@@ -1,8 +1,8 @@
 package foxOnRails.geometry;
 
 import static org.lwjgl.opengl.GL11.*;
-import org.lwjgl.util.vector.Vector3f;
 
+import foxOnRails.engine.Vector3f;
 import foxOnRails.gameContent.Colors;
 
 public class PolyBullet

@@ -7,8 +7,8 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.util.vector.Vector3f;
 
+import foxOnRails.engine.Vector3f;
 import foxOnRails.gameContent.Colors;
 import foxOnRails.geometry.Level;
 import foxOnRails.geometry.PlayerShip;

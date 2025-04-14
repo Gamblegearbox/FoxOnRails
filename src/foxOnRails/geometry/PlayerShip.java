@@ -8,8 +8,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 
-import org.lwjgl.util.vector.Vector3f;
-
+import foxOnRails.engine.Vector3f;
 import foxOnRails.gameContent.Colors;
 import foxOnRails.input.Keyboard;
 

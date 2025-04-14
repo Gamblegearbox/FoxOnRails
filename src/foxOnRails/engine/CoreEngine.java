@@ -9,13 +9,11 @@ import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GLContext;
-import org.lwjgl.util.vector.Matrix4f;
 
 import foxOnRails.input.Cursor;
 import foxOnRails.input.Keyboard;
 import foxOnRails.interfaces.Game;
 import foxOnRails.utils.Settings;
-import foxOnRails.utils.MatrixUtils;
 import foxOnRails.utils.Timer;
 
 public class CoreEngine
