@@ -30,7 +30,7 @@ public class FoxOnRails implements Game
 	// CONTROLS
 	private boolean wireframe = false;
 	private boolean isIsometric = true;
-	private float ambient = 0;
+	private float ambient = 0.1f;
 	
 	@Override
 	public void init() {
@@ -47,7 +47,7 @@ public class FoxOnRails implements Game
         glEnable(GL_POINT_SMOOTH);
         
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
+	
 		initGlobalMaterial();
 		initLight();
 	}
@@ -57,7 +57,7 @@ public class FoxOnRails implements Game
 		glEnable(GL_LIGHT0);
 		
 		FloatBuffer lightPos = BufferUtils.createFloatBuffer(4); 
-		lightPos.put(0).put(1000).put(200).put(1).flip();
+		lightPos.put(0.25f).put(1).put(0).put(0).flip();
 		glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 		
 		LIGHT_DIFFUSE.put(1).put(1).put(1).put(1).flip();
@@ -103,13 +103,9 @@ public class FoxOnRails implements Game
 		glEnable(GL_BLEND);
 		
 		if (wireframe) {
-			glDisable(GL_LIGHTING);
-			glLineWidth(1f);
-			glPointSize(3.5f);
 			glPolygonMode( GL_FRONT, GL_LINE );
 		}
 		else {
-			glEnable(GL_LIGHTING);
 			glPolygonMode( GL_FRONT, GL_FILL );
 		}
 		

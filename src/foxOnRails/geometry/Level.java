@@ -29,29 +29,28 @@ public class Level
 		
 		glDisable(GL_LIGHTING);
 		glPushMatrix();
+		
 		glBegin(GL_LINES);
+		for (int i = 0; i < lines; i++) {
+			float x = -MOVE_BOX_MAX + (xyGap * i);
 
-			for (int i = 0; i < lines; i++) {
-				float x = -MOVE_BOX_MAX + (xyGap * i);
-
-				glColor4f(Colors.PINK[0], Colors.PINK[1], Colors.PINK[2], 0.5f);
-				glVertex3f( x, -MOVE_BOX_MAX, startPos);
+			glColor4f(Colors.PINK[0], Colors.PINK[1], Colors.PINK[2], 0.5f);
+			glVertex3f( x, -MOVE_BOX_MAX, startPos);
+			glColor4f(Colors.TRANSPARENT[0], Colors.TRANSPARENT[1], Colors.TRANSPARENT[2],Colors.TRANSPARENT[3]);
+			glVertex3f( x, -MOVE_BOX_MAX, -lineLength);
+			if(!isIso) {
+				glColor4f(Colors.YELLOW[0], Colors.YELLOW[1], Colors.YELLOW[2], 0.5f);
+				glVertex3f( x, MOVE_BOX_MAX, startPos);
 				glColor4f(Colors.TRANSPARENT[0], Colors.TRANSPARENT[1], Colors.TRANSPARENT[2],Colors.TRANSPARENT[3]);
-				glVertex3f( x, -MOVE_BOX_MAX, -lineLength);
-				if(!isIso) {
-					glColor4f(Colors.YELLOW[0], Colors.YELLOW[1], Colors.YELLOW[2], 0.5f);
-					glVertex3f( x, MOVE_BOX_MAX, startPos);
-					glColor4f(Colors.TRANSPARENT[0], Colors.TRANSPARENT[1], Colors.TRANSPARENT[2],Colors.TRANSPARENT[3]);
-					glVertex3f( x, MOVE_BOX_MAX, -lineLength);
-				}
+				glVertex3f( x, MOVE_BOX_MAX, -lineLength);
 			}
+		}
 		glEnd();
 
 		if(isIso) {
 			glBegin(GL_POINTS);
 			
 			for (int z = 0; z < lines; z++) {
-				
 				glColor4f(Colors.WHITE[0], Colors.WHITE[1], Colors.WHITE[2], dotOpacity);
 				dotOpacity += 0.1;
 				
